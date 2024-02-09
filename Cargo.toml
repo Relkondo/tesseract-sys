@@ -1,11 +1,11 @@
 [package]
 name = "tesseract-sys"
 version = "0.6.1"
-authors = ["Kevin Kwok <antimatter15@gmail.com>", "Chris Couzens <ccouzens@gmail.com>"]
+authors = ["Kevin Kwok <antimatter15@gmail.com>", "Chris Couzens <ccouzens@gmail.com>", "Samuel Coron <coronsamuel@gmail.com"]
 description = "Rust Bindings for Tesseract OCR"
 license = "MIT"
 edition = '2018'
-repository = "https://github.com/ccouzens/tesseract-sys"
+repository = "https://github.com/relkondo/tesseract-sys"
 keywords = ["OCR", "tesseract"]
 categories = ["external-ffi-bindings", "multimedia::images"]
 links = "tesseract"
