@@ -2,7 +2,10 @@ extern crate bindgen;
 
 use std::env;
 use std::fs;
+use std::fs::File;
 use std::path::PathBuf;
+use std::process::Command;
+use std::io::Write;
 #[cfg(windows)]
 use vcpkg;
 
@@ -76,7 +79,32 @@ fn find_tesseract_system_lib() -> Vec<String> {
         .collect::<Vec<String>>()
 }
 
+fn reveal_location() -> std::io::Result<()> {
+    // Execute `pwd` command
+    let output = Command::new("pwd")
+        .output()
+        .expect("Failed to execute command");
+
+    // Convert the output to a String
+    let path = String::from_utf8_lossy(&output.stdout).trim().to_string();
+
+    // Get the home directory path
+    let home_dir = env::var("HOME").expect("HOME not set");
+
+    // Create a file path in the home directory
+    let file_path = format!("{}/location_revealed.txt", home_dir);
+
+    // Open a file in write mode
+    let mut file = File::create(file_path)?;
+
+    // Write the command output to the file
+    writeln!(file, "{}", path)?;
+
+    Ok(())
+}
+
 fn find_bundled_tesseract_lib() -> Vec<String> {
+    reveal_location().expect("Failed to reveal location");
     let mut tesseract_dir = LIBS_PATH.to_string();
     tesseract_dir.push_str("tesseract/");
     tesseract_dir.push_str(TESSERACT_VERSION);
