@@ -6,6 +6,9 @@ use std::path::PathBuf;
 #[cfg(windows)]
 use vcpkg;
 
+const TESSERACT_VERSION: &str = "5.3.4";
+const LIBS_PATH: &str = "resources/libs/";
+
 #[cfg(windows)]
 fn find_tesseract_system_lib() -> Vec<String> {
     println!("cargo:rerun-if-env-changed=TESSERACT_INCLUDE_PATHS");
@@ -71,6 +74,21 @@ fn find_tesseract_system_lib() -> Vec<String> {
         .map(|x| x.to_string_lossy())
         .map(|x| x.to_string())
         .collect::<Vec<String>>()
+}
+
+fn find_bundled_tesseract_lib() -> Vec<String> {
+    let mut tesseract_dir = LIBS_PATH.to_string();
+    tesseract_dir.push_str("tesseract/");
+    tesseract_dir.push_str(TESSERACT_VERSION);
+    let mut tesseract_lib_dir = tesseract_dir.clone();
+    tesseract_lib_dir.push_str("/lib");
+    let mut tesseract_include_dir = tesseract_dir.clone();
+    tesseract_include_dir.push_str("/include");
+
+    println!("cargo:rustc-link-search=native={}", tesseract_lib_dir);
+    println!("cargo:rustc-link-lib=tesseract");
+
+    vec![tesseract_include_dir]
 }
 
 #[cfg(all(
@@ -142,7 +160,7 @@ fn public_types_bindings(_clang_extra_include: &[String]) -> &'static str {
 fn main() {
     // Tell cargo to tell rustc to link the system tesseract
     // and leptonica shared libraries.
-    let clang_extra_include = find_tesseract_system_lib();
+    let clang_extra_include = find_bundled_tesseract_lib();
 
     // Write the bindings to the $OUT_DIR/bindings.rs file.
     let out_path = PathBuf::from(env::var("OUT_DIR").unwrap());
